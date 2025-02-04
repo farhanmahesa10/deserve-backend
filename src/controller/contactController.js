@@ -1,0 +1,218 @@
+import fs from "fs";
+import { contactControl, outletControl } from "../models/index.js";
+import { Op } from "sequelize";
+import { deleteFile } from "../validations/fileValidations.js";
+
+export const getPaginatedContact = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = (page - 1) * limit;
+  const search = req.query.search || "";
+
+  try {
+    const { count, rows } = await contactControl.findAndCountAll({
+      include: [
+        {
+          model: outletControl,
+          attributes: ["outlet_name"],
+          where: {
+            outlet_name: {
+              [Op.like]: `%${search}%`,
+            },
+          },
+        },
+      ],
+      limit,
+      offset,
+      order: [["createdAt", "DESC"]],
+    });
+
+    const totalPages = Math.ceil(count / limit);
+
+    res.json({
+      totalItems: count,
+      totalPages,
+      currentPage: page,
+      contact: rows || [],
+    });
+  } catch (error) {
+    console.error("Error fetching contact:", error);
+    res
+      .status(500)
+      .send({ error: "An error occurred while fetching contact." });
+  }
+};
+export const getContactByNameCafe = async (req, res) => {
+  try {
+    const respon = await contactControl.findAll({
+      include: [
+        {
+          model: outletControl,
+          where: {
+            outlet_name: req.params.outlet_name,
+          },
+        },
+      ],
+    });
+
+    if (!respon) {
+      return res.status(401).json({ massage: "outlet is not found!" });
+    } else {
+      res.status(200).json(respon);
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+export const getContactByIdOutlet = async (req, res) => {
+  try {
+    const respon = await contactControl.findAll({
+      include: [
+        {
+          model: outletControl,
+          where: {
+            id: req.params.id,
+          },
+        },
+      ],
+    });
+
+    if (!respon) {
+      return res.status(401).json({ massage: "outlet is not found!" });
+    } else {
+      res.status(200).json(respon);
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+export const getContact = async (req, res) => {
+  try {
+    const data = await contactControl.findAll();
+    res.send(data);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+export const getContactById = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const data = await contactControl.findByPk(id);
+    res.send(data);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+export const createContact = async (req, res) => {
+  const { id_outlet, contact_name, value, link } = req.body;
+  let logo = req.file ? "images/" + req.file.filename : null;
+  console.log(req.body, "cdek data");
+
+  if (!id_outlet || !req.file || !contact_name || !link || !value) {
+    return res.status(400).json({
+      message: "All field must be filled",
+    });
+  }
+
+  try {
+    const response = await outletControl.findByPk(id_outlet);
+    if (!response) {
+      return res.status(404).json({
+        message: "id_outlet not found",
+      });
+    }
+    const newContact = await contactControl.create({
+      id_outlet,
+      contact_name,
+      value,
+      logo,
+      link,
+    });
+    res.status(201).json({
+      message: "Success to create contact",
+      data: newContact,
+    });
+  } catch (err) {
+    res.status(400).send({
+      message: "Failed to create contact",
+      error: err.message,
+    });
+  }
+};
+
+export const updateContact = async (req, res) => {
+  const id = req.params.id;
+  const { id_outlet, contact_name, value, link } = req.body;
+  let logo = req.file ? "images/" + req.file.filename : null;
+
+  if (!id_outlet || !contact_name || !link || !value) {
+    return res.status(400).json({
+      message: "All field must be filled",
+    });
+  }
+
+  try {
+    const contact = await contactControl.findByPk(id);
+    if (!contact) {
+      return res.status(404).json({
+        message: "contact not found",
+      });
+    }
+
+    if (logo && contact.logo) {
+      deleteFile(contact.logo);
+    }
+
+    await contactControl.update(
+      {
+        id_outlet,
+        contact_name,
+        value,
+        link,
+        logo: logo || contactControl.logo,
+      },
+      { where: { id } }
+    );
+
+    res.status(200).json({
+      message: "Success to change contact",
+    });
+  } catch (err) {
+    res.status(400).send({
+      message: "Failed to change contact",
+      error: err.message,
+    });
+  }
+};
+
+export const deleteContact = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const contact = await contactControl.findOne({ where: { id } });
+    if (!contact) {
+      return res.status(404).json({
+        message: "contact not found",
+      });
+    }
+
+    if (logo && contact.logo) {
+      deleteFile(contact.logo);
+    }
+
+    await contactControl.destroy({
+      where: { id },
+    });
+
+    res.status(200).json({
+      message: "contact success delete",
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Fail to delete contact",
+      error: err.message,
+    });
+  }
+};
