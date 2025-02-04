@@ -31,11 +31,11 @@ export const getPaginatedTable = async (req, res) => {
       totalItems: count,
       totalPages,
       currentPage: page,
-      category: rows || [],
+      table: rows || [],
     });
   } catch (error) {
-    console.error("Error fetching category:", error);
-    res.status(500).send({ error: "An error occurred while fetching category." });
+    console.error("Error fetching table:", error);
+    res.status(500).send({ error: "An error occurred while fetching table." });
   }
 };
 export const getTableByCafe = async (req, res) => {

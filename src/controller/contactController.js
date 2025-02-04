@@ -37,9 +37,7 @@ export const getPaginatedContact = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching contact:", error);
-    res
-      .status(500)
-      .send({ error: "An error occurred while fetching contact." });
+    res.status(500).send({ error: "An error occurred while fetching contact." });
   }
 };
 export const getContactByNameCafe = async (req, res) => {
@@ -108,7 +106,6 @@ export const getContactById = async (req, res) => {
 export const createContact = async (req, res) => {
   const { id_outlet, contact_name, value, link } = req.body;
   let logo = req.file ? "images/" + req.file.filename : null;
-  console.log(req.body, "cdek data");
 
   if (!id_outlet || !req.file || !contact_name || !link || !value) {
     return res.status(400).json({

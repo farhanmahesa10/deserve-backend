@@ -35,13 +35,11 @@ export const getPaginatedProfiles = async (req, res) => {
       totalItems: count,
       totalPages,
       currentPage: page,
-      subcategory: rows || [],
+      profile: rows || [],
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
-    res
-      .status(500)
-      .send({ error: "An error occurred while fetching profile." });
+    res.status(500).send({ error: "An error occurred while fetching profile." });
   }
 };
 
@@ -97,13 +95,11 @@ export const getPaginatedProfile = async (req, res) => {
       totalItems: totalCount,
       totalPages,
       currentPage: page,
-      proflie: proflie || [],
+      profile: proflie || [],
     });
   } catch (error) {
     console.error("Error fetching proflie:", error);
-    res
-      .status(500)
-      .send({ error: "An error occurred while fetching proflie." });
+    res.status(500).send({ error: "An error occurred while fetching proflie." });
   }
 };
 
@@ -244,8 +240,7 @@ export const updateProfile = async (req, res) => {
 export const updateProfileOutlet = async (req, res) => {
   const saltRounds = 10;
   const id_outlet = req.params.id_outlet;
-  const { outlet_name, email, password, cafe_name, address, history } =
-    req.body;
+  const { outlet_name, email, password, cafe_name, address, history } = req.body;
   let logo = req.file ? "images/" + req.file.filename : null;
   try {
     const profile = await outletControl.findOne({
