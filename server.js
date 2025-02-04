@@ -4,7 +4,7 @@ import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
 import morgan from "morgan";
-import { createOrders } from "./src/controller/tableController.js";
+import { createOrders } from "./src/controller/orderController.js";
 const app = express();
 const port = 3000;
 const server = http.createServer(app);

@@ -1,14 +1,6 @@
 import { Op } from "sequelize";
 import { orderControl, outletControl, tableControl } from "../models/index.js";
 
-export const createOrders = async (ord, req, res) => {
-  try {
-    await orderControl.bulkCreate(ord);
-  } catch (err) {
-    res.status(400).json({ message: "failed to create Order" });
-    console.log(err);
-  }
-};
 export const getPaginatedTable = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
