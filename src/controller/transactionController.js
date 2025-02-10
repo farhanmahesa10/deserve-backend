@@ -6,9 +6,15 @@ export const getPaginatedTransaction = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
   const search = req.query.search || "";
+  const search_name = req.query.by_name || "";
 
   try {
     const { count, rows } = await transactionControl.findAndCountAll({
+      where: {
+        by_name: {
+          [Op.like]: `%${search_name}%`,
+        },
+      },
       include: [
         {
           model: outletControl,
@@ -62,14 +68,21 @@ export const getTransaction = async (req, res) => {
 export const getTransactionById = async (req, res) => {
   const id = req.params.id;
   try {
-    const data = await transactionControl.findByPk({
-      where: { id },
-      includes: [
+    const data = await outletControl.findOne({
+      include: [
         {
-          model: orderControl,
+          model: transactionControl,
+          where: {
+            id: req.params.id,
+          },
           include: [
             {
-              model: menuControl,
+              model: orderControl,
+              include: [
+                {
+                  model: menuControl,
+                },
+              ],
             },
           ],
         },
@@ -80,13 +93,13 @@ export const getTransactionById = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
-
 export const createTransaction = async (req, res) => {
-  const { id_table, status, pays_method, total_pay, note, by_name } = req.body;
+  const { id_table, id_outlet, status, pays_method, total_pay, note, by_name } = req.body;
 
   try {
     const newTransaction = await transactionControl.create({
       id_table,
+      id_outlet,
       status,
       pays_method,
       total_pay,
@@ -107,9 +120,9 @@ export const createTransaction = async (req, res) => {
 
 export const updateTransaction = async (req, res) => {
   const id = req.params.id;
-  const { id_table, status, pays_method, total_pay, note, by_name } = req.body;
+  const { id_table, id_outlet, status, pays_method, total_pay, note, by_name } = req.body;
 
-  if (!id_table || !status || !pays_method || !total_pay || !note || !by_name) {
+  if (!id_table || !id_outlet || !status || !pays_method || !total_pay || !note || !by_name) {
     return res.status(400).json({
       message: "All field must be filled",
     });
@@ -126,6 +139,7 @@ export const updateTransaction = async (req, res) => {
     await transactionControl.update(
       {
         id_table,
+        id_outlet,
         status,
         pays_method,
         total_pay,

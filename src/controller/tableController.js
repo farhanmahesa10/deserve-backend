@@ -39,24 +39,27 @@ export const getPaginatedTable = async (req, res) => {
   }
 };
 export const getTableByCafe = async (req, res) => {
-  const outlet_name = req.params.outlet_name;
   try {
-    const data = await tableControl.findAll({
-      // required: false,
+    const respon = await tableControl.findAll({
       include: [
         {
           model: outletControl,
-          where: { outlet_name },
+          where: {
+            outlet_name: req.params.outlet_name,
+          },
         },
       ],
     });
-    console.log(data, "cek");
-    req.send(data);
-  } catch (error) {
-    res.status(400).json({ message: error });
+
+    if (!respon) {
+      return res.status(401).json({ massage: "outlet is not found!" });
+    } else {
+      res.status(200).json(respon);
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 };
-
 export const getTable = async (req, res) => {
   try {
     const data = await tableControl.findAll();

@@ -1,10 +1,6 @@
 import { Op, QueryTypes } from "sequelize";
 import sequelize from "../db/config/db.js";
-import {
-  contactControl,
-  outletControl,
-  profileControl,
-} from "../models/index.js";
+import { contactControl, eventControl, galleryControl, outletControl, profileControl } from "../models/index.js";
 import bcrypt from "bcrypt";
 export const getOutletAndProfileById = async (req, res) => {
   const id = req.params.id;
@@ -57,9 +53,7 @@ export const getPaginatedOutlet = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
-    res
-      .status(500)
-      .send({ error: "An error occurred while fetching profile." });
+    res.status(500).send({ error: "An error occurred while fetching profile." });
   }
 };
 
@@ -76,6 +70,12 @@ export const getAll = async (req, res) => {
         },
         {
           model: contactControl,
+        },
+        {
+          model: eventControl,
+        },
+        {
+          model: galleryControl,
         },
       ],
     });

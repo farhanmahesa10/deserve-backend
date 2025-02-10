@@ -1,11 +1,10 @@
 import { orderControl } from "../models/index.js";
 
-export const createOrders = async (ord, req, res) => {
+export const createOrders = async (ord) => {
   try {
     await orderControl.bulkCreate(ord);
-    res.status(200).json({ message: "succesfully to create order" });
+    console.log("succesfully to create order");
   } catch (err) {
-    res.status(400).json({ message: "failed to create Order" });
     console.log(err);
   }
 };

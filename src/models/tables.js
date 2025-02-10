@@ -4,7 +4,7 @@ const Tables = {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  numer_table: {
+  number_table: {
     type: Sequelize.INTEGER,
     allowNull: false,
   },

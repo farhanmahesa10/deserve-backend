@@ -240,7 +240,7 @@ export const updateProfile = async (req, res) => {
 export const updateProfileOutlet = async (req, res) => {
   const saltRounds = 10;
   const id_outlet = req.params.id_outlet;
-  const { outlet_name, email, password, cafe_name, address, history } = req.body;
+  const { outlet_name, email, role, password, cafe_name, address, history } = req.body;
   let logo = req.file ? "images/" + req.file.filename : null;
   try {
     const profile = await outletControl.findOne({
@@ -268,6 +268,7 @@ export const updateProfileOutlet = async (req, res) => {
         address: address ? address : profile.profile.address,
         history: history ? history : profile.profile.history,
         logo: logo ? logo : profile.profile.logo,
+        role: role ? role : profile.profile.role,
       },
       { where: { id_outlet } }
     );

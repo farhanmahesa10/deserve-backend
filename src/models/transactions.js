@@ -4,12 +4,16 @@ const Transactions = {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
+  id_outlet: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
   status: {
     type: Sequelize.STRING,
     allowNull: false,
   },
   pays_method: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
     allowNull: false,
   },
   total_pay: {
