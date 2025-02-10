@@ -52,7 +52,7 @@ export const getPaginatedTransaction = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching transaction:", error);
-    res.status(500).send({ error: "An error occurred while fetching transaction." });
+    res.status(500).send({ error });
   }
 };
 
